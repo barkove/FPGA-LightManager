@@ -1,0 +1,1 @@
+There are rtl description of rotate encoder and module that manages LEDs by shaft of encoder.
