@@ -39,6 +39,7 @@ module light_manager #(
 ); 
 
 wire                                      pwm_out;
+wire                                      rst;
 
 wire                                      increase, decrease;
 reg   [ PWM_VALUE_SIZE - 1 : 0 ]          brightness_value;
@@ -49,7 +50,7 @@ pmod_enc_rot #(
   .DELAY_IN_US      ( DELAY_IN_US             )
 ) pmod_enc_rot_0 (
   .clk_i            ( clk_i                   ),
-  .rst_i            ( rst_i                   ),
+  .rst_i            ( rst                     ),
   
   // GPIO interface signals
   .a_i              ( a_i                     ),
@@ -63,17 +64,19 @@ pwm_gen #(
   .SIZE_OF_VALUE    ( PWM_VALUE_SIZE          )
 ) pwm_gen_0 (
   .clk_i            ( clk_i                   ),
-  .rst_i            ( rst_i                   ),
+  .rst_i            ( rst                     ),
   
   .value_i          ( brightness_value        ),
   
   .pwm_o            ( pwm_out                 ) 
 );
 
+assign rst = !rst_i;
+
 assign leds_o = { 4 { pwm_out } };
 
-always @( posedge clk_i or posedge rst_i )
-  if ( rst_i )
+always @( posedge clk_i or posedge rst )
+  if ( rst )
     brightness_value <= { PWM_VALUE_SIZE{ 1'b0 } };
   else
     if ( increase && ( { PWM_VALUE_SIZE{ 1'b1 } } -  BRIGHTNESS_INC >= brightness_value ) )

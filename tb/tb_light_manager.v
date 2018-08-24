@@ -33,7 +33,7 @@ parameter     BRIGHTNESS_INC        = 10;
 
 reg           clk, rst;
 
-wire  [7 : 0] future_leds;
+wire  [3 : 0] future_leds;
 
 // GPIO interface signals
 reg           a_i, b_i;
@@ -287,9 +287,9 @@ initial
   begin
     a_i = 1;
     b_i = 1;
-    rst = 1;
-    #CLOCK_SEMI_PERIOD_NS;
     rst = 0;
+    #CLOCK_SEMI_PERIOD_NS;
+    rst = 1;
     clock_start();
   end
   
