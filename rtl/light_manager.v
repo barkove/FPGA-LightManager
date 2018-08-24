@@ -31,7 +31,7 @@ module light_manager #(
   input               clk_i,
   input               rst_i,
   
-  output [7 : 0]      leds_o,
+  output [3 : 0]      leds_o,
   
   // GPIO interface signals
   input               a_i,
@@ -70,7 +70,7 @@ pwm_gen #(
   .pwm_o            ( pwm_out                 ) 
 );
 
-assign leds_o = { 8 { pwm_out } };
+assign leds_o = { 4 { pwm_out } };
 
 always @( posedge clk_i or posedge rst_i )
   if ( rst_i )
