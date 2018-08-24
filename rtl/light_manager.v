@@ -23,6 +23,7 @@
 module light_manager #(
   // 1 <= CLOCK_FREQ_MHZ <= 655
   parameter CLOCK_FREQ_MHZ          = 100,
+  // DELAY_IN_US must be greater than 1
   parameter DELAY_IN_US             = 55, 
   parameter PWM_VALUE_SIZE          = 8,
   parameter BRIGHTNESS_INC          = 5
@@ -40,7 +41,6 @@ module light_manager #(
 wire                                      pwm_out;
 
 wire                                      increase, decrease;
-reg                                       brightness_strobe;
 reg   [ PWM_VALUE_SIZE - 1 : 0 ]          brightness_value;
 
 pmod_enc_rot #(
@@ -65,8 +65,6 @@ pwm_gen #(
   .clk_i            ( clk_i                   ),
   .rst_i            ( rst_i                   ),
   
-  // setting of pwm 
-  .set_i            ( brightness_strobe       ),
   .value_i          ( brightness_value        ),
   
   .pwm_o            ( pwm_out                 ) 
@@ -78,16 +76,10 @@ always @( posedge clk_i or posedge rst_i )
   if ( rst_i )
     brightness_value <= { PWM_VALUE_SIZE{ 1'b0 } };
   else
-    if ( increase )
+    if ( increase && ( { PWM_VALUE_SIZE{ 1'b1 } } -  BRIGHTNESS_INC >= brightness_value ) )
       brightness_value <= brightness_value + BRIGHTNESS_INC;
     else 
-      if ( decrease )
+      if ( decrease && ( BRIGHTNESS_INC <= brightness_value ) )
         brightness_value <= brightness_value - BRIGHTNESS_INC;
-        
-always @( posedge clk_i or posedge rst_i )
-  if ( rst_i )
-    brightness_strobe <= 1'b0;
-  else
-    brightness_strobe <= ( increase || decrease );
       
 endmodule
