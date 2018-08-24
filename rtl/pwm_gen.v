@@ -26,37 +26,17 @@ module pwm_gen #(
   input                          clk_i,
   input                          rst_i,
   
-  // setting of pwm 
-  input                          set_i,
   input  [SIZE_OF_VALUE - 1 : 0] value_i,
   
   output                         pwm_o 
 );
 
-reg                         srst;
 reg [SIZE_OF_VALUE - 1 : 0] counter;
-reg [SIZE_OF_VALUE - 1 : 0] value;
 
-assign pwm_o = ( !rst_i && ( counter < value ) ) ? 1 : 0;
-
-always @( posedge clk_i or posedge rst_i )
-  if ( rst_i )
-    value <= 0;
-  else
-    if ( set_i )
-      value <= value_i;
-
-always @( posedge clk_i or posedge rst_i )
-  if ( rst_i )
-    srst <= 0;
-  else
-    if ( set_i )
-      srst <= 1;
-    else 
-      srst <= 0;
+assign pwm_o = !rst_i && ( counter < value_i ) ;
 
 always @( posedge clk_i or posedge rst_i ) 
-  if ( rst_i || srst )
+  if ( rst_i )
     counter <= 0;
   else 
     counter <= counter + 1;
