@@ -25,7 +25,7 @@ module tb_light_manager();
 parameter     CLOCK_SEMI_PERIOD_NS  = 5;
 parameter     EXPECTED_DELAY_IN_US  = 1;
 
-// 1 <= CLOCK_FREQ_MHZ <= 655, CLOCK_FREQ_MHZ = 1000 / ( 2 * CLOCK_SEMI_PERIOD_NS )
+// 1 < CLOCK_FREQ_MHZ <= 655, CLOCK_FREQ_MHZ = 1000 / ( 2 * CLOCK_SEMI_PERIOD_NS )
 parameter     CLOCK_FREQ_MHZ        = 100;
 parameter     DELAY_IN_US           = 1;
 parameter     PWM_VALUE_SIZE        = 8;
@@ -288,7 +288,7 @@ initial
     a_i = 1;
     b_i = 1;
     rst = 0;
-    #CLOCK_SEMI_PERIOD_NS;
+    #1000;
     rst = 1;
     clock_start();
   end

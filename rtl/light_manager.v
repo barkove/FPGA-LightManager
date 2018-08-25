@@ -21,9 +21,8 @@
 
 
 module light_manager #(
-  // 1 <= CLOCK_FREQ_MHZ <= 655
+  // 1 < CLOCK_FREQ_MHZ <= 655
   parameter CLOCK_FREQ_MHZ          = 100,
-  // DELAY_IN_US must be greater than 1
   parameter DELAY_IN_US             = 55, 
   parameter PWM_VALUE_SIZE          = 8,
   parameter BRIGHTNESS_INC          = 5
