@@ -23,7 +23,7 @@
 module light_manager #(
   // 1 < CLOCK_FREQ_MHZ <= 655
   parameter CLOCK_FREQ_MHZ          = 100,
-  parameter DELAY_IN_US             = 55, 
+  parameter DELAY_IN_US             = 50, 
   parameter PWM_VALUE_SIZE          = 8,
   parameter BRIGHTNESS_INC          = 5
 )(
@@ -48,7 +48,7 @@ pmod_enc_rot #(
   .DELAY_IN_US      ( DELAY_IN_US             )
 ) pmod_enc_rot_0 (
   .clk_i            ( clk_i                   ),
-  .rst_n_i          ( rst_n_i                     ),
+  .rst_n_i          ( rst_n_i                 ),
   
   // GPIO interface signals
   .a_i              ( a_i                     ),
@@ -62,7 +62,7 @@ pwm_gen #(
   .SIZE_OF_VALUE    ( PWM_VALUE_SIZE          )
 ) pwm_gen_0 (
   .clk_i            ( clk_i                   ),
-  .rst_n_i          ( rst_n_i                     ),
+  .rst_n_i          ( rst_n_i                 ),
   
   .value_i          ( brightness_value        ),
   
