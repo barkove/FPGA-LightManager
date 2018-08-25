@@ -24,7 +24,7 @@ module pwm_gen #(
   parameter SIZE_OF_VALUE = 8
 )(
   input                          clk_i,
-  input                          rst_i,
+  input                          rst_n_i,
   
   input  [SIZE_OF_VALUE - 1 : 0] value_i,
   
@@ -33,10 +33,10 @@ module pwm_gen #(
 
 reg [SIZE_OF_VALUE - 1 : 0] counter;
 
-assign pwm_o = !rst_i && ( counter < value_i ) ;
+assign pwm_o = rst_n_i && ( counter < value_i ) ;
 
-always @( posedge clk_i or posedge rst_i ) 
-  if ( rst_i )
+always @( posedge clk_i or negedge rst_n_i ) 
+  if ( !rst_n_i )
     counter <= 0;
   else 
     counter <= counter + 1;

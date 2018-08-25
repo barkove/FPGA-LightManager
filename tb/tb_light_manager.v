@@ -23,15 +23,15 @@
 module tb_light_manager();
 
 parameter     CLOCK_SEMI_PERIOD_NS  = 5;
-parameter     EXPECTED_DELAY_IN_US  = 1;
+parameter     EXPECTED_DELAY_IN_US  = 55;
 
 // 1 < CLOCK_FREQ_MHZ <= 655, CLOCK_FREQ_MHZ = 1000 / ( 2 * CLOCK_SEMI_PERIOD_NS )
 parameter     CLOCK_FREQ_MHZ        = 100;
-parameter     DELAY_IN_US           = 1;
+parameter     DELAY_IN_US           = 55;
 parameter     PWM_VALUE_SIZE        = 8;
-parameter     BRIGHTNESS_INC        = 10;
+parameter     BRIGHTNESS_INC        = 5;
 
-reg           clk, rst;
+reg           clk, rst_n;
 
 wire  [3 : 0] future_leds;
 
@@ -45,7 +45,7 @@ light_manager #(
   .BRIGHTNESS_INC         ( BRIGHTNESS_INC   )
 ) light_manager_0 (
   .clk_i                  ( clk              ),
-  .rst_i                  ( rst              ),
+  .rst_n_i                  ( rst_n              ),
   
   .leds_o                 ( future_leds      ),
   
@@ -201,13 +201,12 @@ initial
   end
 */
 
-task clock_start();
+initial
   begin
     clk = 0;
     forever #CLOCK_SEMI_PERIOD_NS 
       clk = ~clk;
   end
-endtask
 
 reg a_req_strobe = 0, b_req_strobe = 0;
 
@@ -287,10 +286,10 @@ initial
   begin
     a_i = 1;
     b_i = 1;
-    rst = 0;
+    rst_n = 0;
     #1000;
-    rst = 1;
-    clock_start();
+    rst_n = 1;
+    //clock_start();
   end
   
 initial
@@ -301,6 +300,12 @@ initial
     // decrease shim value
     left();
     #( ( 10 + 2 ) * EXPECTED_DELAY_IN_US * 1000 );
+    right();
+    #( ( 10 + 2 ) * EXPECTED_DELAY_IN_US * 1000 );
+    right();
+    #( ( 10 + 2 ) * EXPECTED_DELAY_IN_US * 1000 );
+    right();
+    #( ( 10 + 2 ) * EXPECTED_DELAY_IN_US * 1000 );    
   end  
 
 endmodule

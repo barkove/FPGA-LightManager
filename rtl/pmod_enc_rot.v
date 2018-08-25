@@ -26,7 +26,7 @@ module pmod_enc_rot #(
   parameter DELAY_IN_US    = 55
 )(
   input  clk_i,
-  input  rst_i,
+  input  rst_n_i,
   
   // GPIO interface signals
   input  a_i,
@@ -53,8 +53,8 @@ assign counter_en = fe_is_handled || re_is_handled;
 assign left_o     = ( counter == ( DELAY_TICKS - 1 ) ) && re_is_handled && b_i;
 assign right_o    = ( counter == ( DELAY_TICKS - 1 ) ) && re_is_handled && !b_i;
 
-always @( posedge clk_i or posedge rst_i )
-  if ( rst_i )
+always @( posedge clk_i or negedge rst_n_i )
+  if ( !rst_n_i )
     edge_catcher <= 2'b11;
   else
     begin 
@@ -62,22 +62,28 @@ always @( posedge clk_i or posedge rst_i )
       edge_catcher[1] <= edge_catcher[0];
     end
 
-always @( posedge clk_i or posedge rst_i )
-  if ( rst_i || flag_reset )
+always @( posedge clk_i or negedge rst_n_i )
+  if ( !rst_n_i )
     fe_is_handled <= 1'b0;
-  else 
-    if ( !counter_en )
-      fe_is_handled <= !edge_catcher[0] && edge_catcher[1];
+  else
+    if (flag_reset)
+      fe_is_handled <= 1'b0;
+    else 
+      if ( !counter_en )
+        fe_is_handled <= !edge_catcher[0] && edge_catcher[1];
       
-always @( posedge clk_i or posedge rst_i )
-  if ( rst_i || flag_reset )
+always @( posedge clk_i or negedge rst_n_i )
+  if ( !rst_n_i)
     re_is_handled <= 1'b0;
   else
-    if ( !counter_en )
-      re_is_handled <= edge_catcher[0] && !edge_catcher[1];
+    if (flag_reset)
+      re_is_handled <= 1'b0;
+    else
+      if ( !counter_en )
+        re_is_handled <= edge_catcher[0] && !edge_catcher[1];
       
-always @( posedge clk_i or posedge rst_i )
-  if ( rst_i || !counter_en )
+always @( posedge clk_i or negedge rst_n_i )
+  if ( !rst_n_i || !counter_en )
     counter <= 15'b0;
   else 
     counter <= counter + 15'b1;
