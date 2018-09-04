@@ -21,7 +21,7 @@
 
 
 module pmod_enc_rot #(
-  // 1 <= CLOCK_FREQ_MHZ <= 655
+  // 3 <= CLOCK_FREQ_MHZ <= 655
   parameter CLOCK_FREQ_MHZ = 100,
   parameter DELAY_IN_US    = 55
 )(
@@ -41,26 +41,30 @@ localparam      DELAY_TICKS = CLOCK_FREQ_MHZ * DELAY_IN_US;
 wire            flag_reset;
 reg             fe_is_handled, re_is_handled;
 
-reg   [1 : 0]   edge_catcher;
+reg   [3 : 0]   a_catcher;
+reg   [2 : 0]   b_catcher;
 
 wire            counter_en;
 reg   [14 : 0]  counter;
 
-assign flag_reset = counter == ( DELAY_TICKS - 1 );
+assign flag_reset = counter == ( DELAY_TICKS - 2 );
 
 assign counter_en = fe_is_handled || re_is_handled;
 
-assign left_o     = ( counter == ( DELAY_TICKS - 1 ) ) && re_is_handled && b_i;
-assign right_o    = ( counter == ( DELAY_TICKS - 1 ) ) && re_is_handled && !b_i;
+assign left_o     = ( counter == ( DELAY_TICKS - 2 ) ) && re_is_handled && b_catcher[2];
+assign right_o    = ( counter == ( DELAY_TICKS - 2 ) ) && re_is_handled && !b_catcher[2];
 
 always @( posedge clk_i or negedge rst_n_i )
   if ( !rst_n_i )
-    edge_catcher <= 2'b11;
+    b_catcher <= 3'b0;
   else
-    begin 
-      edge_catcher[0] <= a_i;
-      edge_catcher[1] <= edge_catcher[0];
-    end
+    b_catcher <= { b_catcher[1 : 0], b_i };
+
+always @( posedge clk_i or negedge rst_n_i )
+  if ( !rst_n_i )
+    a_catcher <= 4'b1111;
+  else
+    a_catcher <= { a_catcher[2 : 0], a_i };
 
 always @( posedge clk_i or negedge rst_n_i )
   if ( !rst_n_i )
@@ -70,7 +74,7 @@ always @( posedge clk_i or negedge rst_n_i )
       fe_is_handled <= 1'b0;
     else 
       if ( !counter_en )
-        fe_is_handled <= !edge_catcher[0] && edge_catcher[1];
+        fe_is_handled <= !a_catcher[2] && a_catcher[3];
       
 always @( posedge clk_i or negedge rst_n_i )
   if ( !rst_n_i )
@@ -80,7 +84,7 @@ always @( posedge clk_i or negedge rst_n_i )
       re_is_handled <= 1'b0;
     else
       if ( !counter_en )
-        re_is_handled <= edge_catcher[0] && !edge_catcher[1];
+        re_is_handled <= a_catcher[2] && !a_catcher[3];
       
 always @( posedge clk_i or negedge rst_n_i )
   if ( !rst_n_i ) 

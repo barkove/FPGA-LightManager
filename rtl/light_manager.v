@@ -21,7 +21,7 @@
 
 
 module light_manager #(
-  // 1 < CLOCK_FREQ_MHZ <= 655
+  // 3 <= CLOCK_FREQ_MHZ <= 655
   parameter CLOCK_FREQ_MHZ          = 100,
   parameter DELAY_IN_US             = 50, 
   parameter PWM_VALUE_SIZE          = 8,
@@ -43,7 +43,7 @@ wire                                      increase, decrease;
 reg   [ PWM_VALUE_SIZE - 1 : 0 ]          brightness_value;
 
 pmod_enc_rot #(
-  // 1 <= CLOCK_FREQ_MHZ <= 655
+  // 3 <= CLOCK_FREQ_MHZ <= 655
   .CLOCK_FREQ_MHZ   ( CLOCK_FREQ_MHZ          ),
   .DELAY_IN_US      ( DELAY_IN_US             )
 ) pmod_enc_rot_0 (
