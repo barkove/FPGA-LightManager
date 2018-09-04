@@ -66,26 +66,29 @@ always @( posedge clk_i or negedge rst_n_i )
   if ( !rst_n_i )
     fe_is_handled <= 1'b0;
   else
-    if (flag_reset)
+    if ( flag_reset )
       fe_is_handled <= 1'b0;
     else 
       if ( !counter_en )
         fe_is_handled <= !edge_catcher[0] && edge_catcher[1];
       
 always @( posedge clk_i or negedge rst_n_i )
-  if ( !rst_n_i)
+  if ( !rst_n_i )
     re_is_handled <= 1'b0;
   else
-    if (flag_reset)
+    if ( flag_reset )
       re_is_handled <= 1'b0;
     else
       if ( !counter_en )
         re_is_handled <= edge_catcher[0] && !edge_catcher[1];
       
 always @( posedge clk_i or negedge rst_n_i )
-  if ( !rst_n_i || !counter_en )
+  if ( !rst_n_i ) 
     counter <= 15'b0;
-  else 
-    counter <= counter + 15'b1;
+  else
+    if ( !counter_en )
+      counter <= 15'b0;
+    else 
+      counter <= counter + 15'b1;
 
 endmodule
